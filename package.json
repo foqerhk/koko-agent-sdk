@@ -1,0 +1,157 @@
+{
+  "name": "@intentcomputing/koko-agent-sdk",
+  "version": "1.1.1",
+  "description": "Koko Agent SDK — in-app AI agent for React Native (dump / find / tap with visible cursor). Talk to Intent Computing gateway; no LLM API keys in the app.",
+  "main": "./lib/commonjs/index.js",
+  "module": "./lib/module/index.js",
+  "types": "./lib/typescript/module/index.d.ts",
+  "react-native": "./src/index.ts",
+  "source": "./src/index.ts",
+  "exports": {
+    ".": {
+      "react-native": {
+        "default": "./src/index.ts"
+      },
+      "import": {
+        "types": "./lib/typescript/module/index.d.ts",
+        "default": "./lib/module/index.js"
+      },
+      "require": {
+        "types": "./lib/typescript/commonjs/index.d.ts",
+        "default": "./lib/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "ios",
+    "android",
+    "koko-agent-sdk.podspec",
+    "react-native.config.js",
+    "LICENSE",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "SECURITY.md",
+    "docs/INTEGRATION.md",
+    "docs/INTEGRATION.zh-CN.md",
+    "docs/CONFIGURATION.md",
+    "docs/CONFIGURATION.zh-CN.md",
+    "docs/PRIVACY.md",
+    "docs/PRIVACY.zh-CN.md",
+    "docs/BACKEND_AUTH_DEMOS.md",
+    "docs/BACKEND_AUTH_DEMOS.zh-CN.md",
+    "docs/PUBLISH.md",
+    "docs/PUBLISH.zh-CN.md",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!android/build",
+    "!android/.gradle",
+    "!ios/tests"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "bob build",
+    "test": "jest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm test && bob build",
+    "release": "npm publish --access public --registry https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android",
+    "koko",
+    "agent",
+    "sdk",
+    "ai",
+    "intentcomputing",
+    "automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/foqerhk/koko-agent-sdk.git"
+  },
+  "author": "Intent Computing <hello@intentcomputing.cn>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/foqerhk/koko-agent-sdk/issues"
+  },
+  "homepage": "https://intentcomputing.cn",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.73",
+    "react-native-screens": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native-screens": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/react": "^18.3.12",
+    "jest": "^29.7.0",
+    "react": "18.3.1",
+    "react-native": "0.76.3",
+    "react-native-builder-bob": "^0.40.13",
+    "ts-jest": "^29.4.14",
+    "typescript": "^5.6.3"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.test.ts"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": {
+            "module": "commonjs",
+            "jsx": "react",
+            "esModuleInterop": true
+          }
+        }
+      ]
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ]
+  }
+}

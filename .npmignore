@@ -1,0 +1,23 @@
+# Always ignore
+node_modules/
+.DS_Store
+*.log
+.env
+.env.*
+.secrets/
+coverage/
+example/
+server/
+docs/
+*.tgz
+
+# Keep built artifacts & native
+!lib/
+!src/
+!ios/
+!android/
+!koko-agent-sdk.podspec
+!react-native.config.js
+!README.md
+!LICENSE
+!package.json

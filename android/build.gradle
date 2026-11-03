@@ -1,0 +1,40 @@
+buildscript {
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+  compileSdkVersion safeExtGet('compileSdkVersion', 35)
+  namespace "cn.intentcomputing.kokoagentsdk"
+
+  defaultConfig {
+    minSdkVersion safeExtGet('minSdkVersion', 23)
+    targetSdkVersion safeExtGet('targetSdkVersion', 35)
+  }
+
+  sourceSets {
+    main {
+      java.srcDirs = ['src/main/java']
+    }
+  }
+}
+
+dependencies {
+  implementation "com.facebook.react:react-android"
+  implementation "androidx.annotation:annotation:1.8.2"
+
+  // On-device OCR, the counterpart to Vision on iOS. compileOnly on purpose:
+  // the bundled models add several megabytes, and a host that does not want
+  // text recognition should not pay for them — recognizeScreenText reports
+  // backend "unavailable" when they are absent. A host opts in with:
+  //
+  //   implementation "com.google.mlkit:text-recognition-chinese:16.0.1"
+  //
+  // (or :text-recognition for Latin only). Avoid the play-services-mlkit
+  // variants unless every target device has Play Services.
+  compileOnly "com.google.mlkit:text-recognition:16.0.1"
+  compileOnly "com.google.mlkit:text-recognition-chinese:16.0.1"
+}
