@@ -14,6 +14,7 @@ import { KokoDialogHost } from '../ui/KokoDialogHost';
 import { KokoObserver } from '../ui/KokoObserver';
 import { KokoRemoteSmoke } from '../debug/KokoRemoteSmoke';
 import { KokoUiProvider } from './KokoUiContext';
+import { scheduleReloadResume } from './scheduleReloadResume';
 
 const KokoContext = createContext<KokoAgent | null>(null);
 
@@ -82,14 +83,8 @@ export function KokoProvider({
 
   const resumeTried = useRef(false);
   useEffect(() => {
-    if (!resumeAfterReload || resumeTried.current) return;
-    resumeTried.current = true;
-    // Let the host finish remounting its navigator first, or the resumed run
-    // plans against a half-built tree.
-    const timer = setTimeout(() => {
-      void agent.resumeInterruptedRun().catch(() => {});
-    }, 1500);
-    return () => clearTimeout(timer);
+    if (!resumeAfterReload) return;
+    return scheduleReloadResume(agent, resumeTried);
   }, [agent, resumeAfterReload]);
 
   return (

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2 — Reliable reload recovery
+
+- Resume interrupted goals when a host locale, theme, or navigator rebuild replaces the SDK agent during React Native startup.
+- Defer the single resume-attempt claim until its startup timer actually runs, allowing a replacement agent to reschedule safely without claiming the same checkpoint twice.
+- Add regression coverage for configuration changes that cancel the first recovery timer.
+
 ## 1.1.1 — First official release
 
 - React Native SDK with iOS and Android native modules, visible task progress, host appearance synchronization, privacy gates, and in-app WebView assistance.
