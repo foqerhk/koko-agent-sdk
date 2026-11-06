@@ -4,6 +4,14 @@
 
 本文覆盖宿主接入时可配置的公开接口：`KokoProvider`、`KokoAgentConfig`、运行时外观、单次任务参数，以及内置 UI 组件。TypeScript 类型定义仍是最终准源。
 
+## SDK 与网关兼容
+
+版本协商自动完成，宿主无需配置。SDK 1.2.0 会在每次网关请求中携带 SDK 版本、协议大版本和能力列表。正常迭代时，网关可以推荐新版本，同时继续允许当前 SDK 运行。
+
+兼容窗口结束或遇到紧急安全补丁时，网关返回 HTTP 426 `sdk_upgrade_required`。SDK 会将其视为不可重试错误，不执行任何 App 操作，并直接显示“SDK 版本太旧，请联系应用开发者更新后再使用”。直接使用 `GatewayClient` 的宿主也可以捕获 `GatewayUpgradeRequiredError`。
+
+SDK 导出 `KOKO_SDK_VERSION`、`KOKO_PROTOCOL_VERSION` 和 `KOKO_SDK_CAPABILITIES`。破坏性的线协议变化必须使用新的 `/vN`；npm 包版本不会隐式改变协议大版本。
+
 ## 完整示例
 
 ```tsx

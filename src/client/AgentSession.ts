@@ -19,6 +19,7 @@ import type { Selector, ViewNode } from '../types';
 import {
   GatewayClient,
   GatewayError,
+  GatewayUpgradeRequiredError,
   type AgentHistoryItem,
   type GatewayAction,
   type GatewayConfig,
@@ -626,8 +627,10 @@ export class AgentSession {
         return { success: false, summary: this.text('runtime.cancelled'), steps: this.history.length, sessionId: this.sessionId || '' };
       }
       const diagnostic = e instanceof Error ? e.message : String(e);
-      const copy = e instanceof ActionOutcomeUnknownError || e instanceof ActionValidationError
-        ? e.localizedMessage : this.message('runtime.operationFailed');
+      const copy = e instanceof GatewayUpgradeRequiredError
+        ? this.message('runtime.sdkTooOld')
+        : e instanceof ActionOutcomeUnknownError || e instanceof ActionValidationError
+          ? e.localizedMessage : this.message('runtime.operationFailed');
       const failureMessage = resolveText(copy);
       if (e instanceof GatewayError && e.code === 'quota_exceeded') {
         UsageBus.emit({

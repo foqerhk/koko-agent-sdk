@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://intentcomputing.net/schemas/koko/compatibility-v1.schema.json",
+  "title": "Koko gateway compatibility response",
+  "oneOf": [
+    { "$ref": "#/$defs/capabilities" },
+    { "$ref": "#/$defs/upgradeRequired" }
+  ],
+  "$defs": {
+    "capabilities": {
+      "type": "object",
+      "required": ["ok", "protocol", "sdk", "capabilities"],
+      "properties": {
+        "ok": { "const": true },
+        "protocol": {
+          "type": "object",
+          "required": ["current", "supported"],
+          "properties": {
+            "current": { "type": "integer", "minimum": 1 },
+            "supported": {
+              "type": "array",
+              "items": { "type": "integer", "minimum": 1 },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": true
+        },
+        "sdk": {
+          "type": "object",
+          "required": ["minimum", "recommended"],
+          "properties": {
+            "minimum": { "$ref": "#/$defs/semver" },
+            "recommended": { "$ref": "#/$defs/semver" },
+            "force_update_below": { "$ref": "#/$defs/semver" }
+          },
+          "additionalProperties": true
+        },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "upgradeRequired": {
+      "type": "object",
+      "required": [
+        "ok",
+        "error",
+        "reason",
+        "minimum_sdk_version",
+        "recommended_sdk_version",
+        "supported_protocols",
+        "contact_developer"
+      ],
+      "properties": {
+        "ok": { "const": false },
+        "error": { "const": "sdk_upgrade_required" },
+        "message": { "type": "string" },
+        "reason": {
+          "enum": [
+            "minimum_version",
+            "emergency_patch",
+            "unsupported_protocol",
+            "unversioned_client"
+          ]
+        },
+        "current_sdk_version": { "$ref": "#/$defs/semver" },
+        "minimum_sdk_version": { "$ref": "#/$defs/semver" },
+        "recommended_sdk_version": { "$ref": "#/$defs/semver" },
+        "supported_protocols": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "contact_developer": { "const": true }
+      },
+      "additionalProperties": true
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+].*)?$"
+    }
+  }
+}

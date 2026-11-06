@@ -1,0 +1,83 @@
+openapi: 3.1.0
+info:
+  title: Koko Agent Gateway
+  version: 1.0.0
+  description: Stable protocol v1 shared by Koko SDKs and the gateway.
+servers:
+  - url: https://sdk.intentcomputing.net
+  - url: https://sdk.intentcomputing.cn
+components:
+  parameters:
+    SdkVersion:
+      in: header
+      name: X-Koko-SDK-Version
+      schema: { type: string }
+    ProtocolVersion:
+      in: header
+      name: X-Koko-Protocol-Version
+      schema: { type: integer, const: 1 }
+    Capabilities:
+      in: header
+      name: X-Koko-Capabilities
+      schema: { type: string }
+  responses:
+    UpgradeRequired:
+      description: SDK or protocol must be upgraded before the request can run.
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/compatibility-v1.schema.json#/$defs/upgradeRequired
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /v1/health:
+    get:
+      summary: Gateway health and compatibility metadata
+      responses:
+        '200': { description: Healthy }
+  /v1/capabilities:
+    get:
+      summary: Protocol, SDK window, and feature capabilities
+      responses:
+        '200':
+          description: Compatibility metadata
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/compatibility-v1.schema.json#/$defs/capabilities
+  /v1/me:
+    get:
+      summary: Resolve account and entitlements
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/SdkVersion'
+        - $ref: '#/components/parameters/ProtocolVersion'
+        - $ref: '#/components/parameters/Capabilities'
+      responses:
+        '200': { description: Account snapshot }
+        '426': { $ref: '#/components/responses/UpgradeRequired' }
+  /v1/agent/session:
+    post:
+      summary: Begin an execution-permitted agent session
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/SdkVersion'
+        - $ref: '#/components/parameters/ProtocolVersion'
+        - $ref: '#/components/parameters/Capabilities'
+      responses:
+        '200': { description: Session and execution permit }
+        '426': { $ref: '#/components/responses/UpgradeRequired' }
+  /v1/agent/next:
+    post:
+      summary: Plan the next safe action
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/SdkVersion'
+        - $ref: '#/components/parameters/ProtocolVersion'
+        - $ref: '#/components/parameters/Capabilities'
+      responses:
+        '200': { description: Next action and refreshed execution permit }
+        '426': { $ref: '#/components/responses/UpgradeRequired' }

@@ -108,6 +108,7 @@ export type { AgentSessionOptions, AgentRunResult, AskUserHandler } from './clie
 export {
   GatewayClient,
   GatewayError,
+  GatewayUpgradeRequiredError,
   resolveGatewayBaseUrl,
   toLocalAgentAction,
 } from './client/GatewayClient';
@@ -119,7 +120,21 @@ export type {
   AgentHistoryItem,
   KokoTokenProvider,
   KokoTokenResult,
+  GatewayUpgradeReason,
 } from './client/GatewayClient';
+
+export {
+  KOKO_SDK_VERSION,
+  KOKO_PROTOCOL_VERSION,
+  KOKO_SDK_CAPABILITIES,
+  kokoProtocolHeaders,
+} from './protocol';
+export type {
+  KokoSdkCapability,
+  KokoProtocolInfo,
+  KokoSdkCompatibilityInfo,
+  KokoGatewayCapabilities,
+} from './protocol';
 
 export { AccountStore } from './commercial/AccountStore';
 export { UsageBus } from './commercial/UsageBus';
