@@ -13,6 +13,10 @@ import { ExplorationGraph, exploreHintsModelText, goalExploreQuery } from '../ex
 import { findNodeById } from '../selector/match';
 import { goalOcrCandidates, visibleWebViewFrames, PUBLIC_WALLET_CHOICES, walletConnectionAllowed } from '../assist/ocrTarget';
 import type { ViewNode } from '../types';
+import {
+  kokoProtocolHeaders,
+  type KokoGatewayCapabilities,
+} from '../protocol';
 
 export type GatewayConfig = {
   /**
@@ -201,6 +205,40 @@ export class GatewayError extends Error {
   }
 }
 
+export type GatewayUpgradeReason =
+  | 'minimum_version'
+  | 'emergency_patch'
+  | 'unsupported_protocol'
+  | 'unversioned_client';
+
+export class GatewayUpgradeRequiredError extends GatewayError {
+  readonly currentSdkVersion?: string;
+  readonly minimumSdkVersion: string;
+  readonly recommendedSdkVersion: string;
+  readonly supportedProtocols: number[];
+  readonly reason: GatewayUpgradeReason;
+  readonly contactDeveloper: boolean;
+
+  constructor(opts: {
+    message: string;
+    currentSdkVersion?: string;
+    minimumSdkVersion?: string;
+    recommendedSdkVersion?: string;
+    supportedProtocols?: number[];
+    reason?: GatewayUpgradeReason;
+    contactDeveloper?: boolean;
+  }) {
+    super(opts.message, { code: 'sdk_upgrade_required', status: 426 });
+    this.name = 'GatewayUpgradeRequiredError';
+    this.currentSdkVersion = opts.currentSdkVersion;
+    this.minimumSdkVersion = opts.minimumSdkVersion || 'unknown';
+    this.recommendedSdkVersion = opts.recommendedSdkVersion || this.minimumSdkVersion;
+    this.supportedProtocols = opts.supportedProtocols || [];
+    this.reason = opts.reason || 'minimum_version';
+    this.contactDeveloper = opts.contactDeveloper !== false;
+  }
+}
+
 export class GatewayClient {
   private readonly baseUrl: string;
   private readonly token?: string;
@@ -271,6 +309,7 @@ export class GatewayClient {
     const headers: Record<string, string> = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
+      ...kokoProtocolHeaders(),
     };
     if (this.appId) headers['X-Koko-App-Id'] = this.appId;
     return headers;
@@ -295,24 +334,70 @@ export class GatewayClient {
       message?: string;
       quota?: KokoAccountSnapshot['quota'];
       plan?: KokoPlanId;
+      current_sdk_version?: string;
+      minimum_sdk_version?: string;
+      recommended_sdk_version?: string;
+      supported_protocols?: number[];
+      reason?: GatewayUpgradeReason;
+      contact_developer?: boolean;
     } = {};
     try {
       json = (await res.json()) as typeof json;
     } catch {
       // ignore
     }
+    this.throwGatewayError(res.status, json, fallback);
+  }
+
+  private throwGatewayError(
+    status: number,
+    json: {
+      error?: string;
+      message?: string;
+      quota?: KokoAccountSnapshot['quota'];
+      plan?: KokoPlanId;
+      current_sdk_version?: string;
+      minimum_sdk_version?: string;
+      recommended_sdk_version?: string;
+      supported_protocols?: number[];
+      reason?: GatewayUpgradeReason;
+      contact_developer?: boolean;
+    },
+    fallback: string,
+  ): never {
+    if (status === 426 || json.error === 'sdk_upgrade_required') {
+      throw new GatewayUpgradeRequiredError({
+        message: json.message || 'SDK upgrade required',
+        currentSdkVersion: json.current_sdk_version,
+        minimumSdkVersion: json.minimum_sdk_version,
+        recommendedSdkVersion: json.recommended_sdk_version,
+        supportedProtocols: json.supported_protocols,
+        reason: json.reason,
+        contactDeveloper: json.contact_developer,
+      });
+    }
     throw new GatewayError(json.message || json.error || fallback, {
       code: json.error || 'error',
-      status: res.status,
+      status,
       quota: json.quota,
       plan: json.plan,
     });
   }
 
   async health(): Promise<Record<string, unknown>> {
-    const res = await fetch(`${this.baseUrl}/v1/health`);
-    if (!res.ok) throw new Error(`health ${res.status}`);
+    const res = await fetch(`${this.baseUrl}/v1/health`, {
+      headers: kokoProtocolHeaders(),
+    });
+    if (!res.ok) await this.parseError(res, `health ${res.status}`);
     return (await res.json()) as Record<string, unknown>;
+  }
+
+  async capabilities(): Promise<KokoGatewayCapabilities> {
+    const res = await fetch(`${this.baseUrl}/v1/capabilities`, {
+      headers: kokoProtocolHeaders(),
+    });
+    if (!res.ok) await this.parseError(res, `capabilities ${res.status}`);
+    return (await res.json()) as KokoGatewayCapabilities;
   }
 
   /** Open session + initial execution permit (before first dump). */
@@ -340,21 +425,18 @@ export class GatewayClient {
     const res = await this.authenticatedFetch(`${this.baseUrl}/v1/me`);
     const json = (await res.json()) as {
       ok?: boolean;
-      plan?: string;
+      plan?: KokoPlanId;
       region?: string;
       provider?: string;
       entitlements?: Partial<KokoEntitlements>;
-      quota?: { daily?: number; used_today?: number; remaining?: number };
+      quota?: KokoAccountSnapshot['quota'];
       error?: string;
       message?: string;
     };
     if (!res.ok) {
-      throw new GatewayError(json.message || json.error || `me ${res.status}`, {
-        code: json.error || 'unauthorized',
-        status: res.status,
-      });
+      this.throwGatewayError(res.status, json, `me ${res.status}`);
     }
-    const plan = (json.plan as KokoPlanId) || 'free';
+    const plan = json.plan || 'free';
     const entitlements: KokoEntitlements = {
       custom_branding: json.entitlements?.custom_branding === true,
       locale: json.entitlements?.locale !== false,
@@ -389,10 +471,7 @@ export class GatewayClient {
       message?: string;
     };
     if (!res.ok) {
-      throw new GatewayError(json.message || json.error || `usage ${res.status}`, {
-        code: json.error || 'error',
-        status: res.status,
-      });
+      this.throwGatewayError(res.status, json, `usage ${res.status}`);
     }
     return {
       plan: json.plan || 'free',
@@ -446,12 +525,7 @@ export class GatewayClient {
         quota?: KokoAccountSnapshot['quota'];
         plan?: KokoPlanId;
       };
-      throw new GatewayError(err.message || err.error || `gateway ${res.status}`, {
-        code: err.error || 'error',
-        status: res.status,
-        quota: err.quota,
-        plan: err.plan,
-      });
+      this.throwGatewayError(res.status, err, `gateway ${res.status}`);
     }
     if (!json.execution_permit) {
       throw new GatewayError('invalid agent response', {

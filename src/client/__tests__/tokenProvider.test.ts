@@ -27,6 +27,8 @@ describe('GatewayClient tokenProvider', () => {
     const headers = (fetchMock.mock.calls[0]?.[1] as RequestInit).headers as Record<string, string>;
     expect(headers.Authorization).toContain('Bearer ');
     expect(headers['X-Koko-App-Id']).toBe('com.example.host');
+    expect(headers['X-Koko-SDK-Version']).toBe('1.2.0');
+    expect(headers['X-Koko-Protocol-Version']).toBe('1');
   });
 
   it('refreshes once after a 401', async () => {

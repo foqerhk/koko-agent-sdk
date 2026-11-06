@@ -10,6 +10,10 @@ React Native SDK for an observable in-app assistant. The host supplies a short-l
 - Expo development build or a native build; Expo Go cannot load this native module.
 - A host backend that exchanges its server-only client secret for short-lived mobile access tokens. Neither credential is an OpenAI or DeepSeek API key.
 
+## Version compatibility
+
+SDK 1.2.0 reports its SDK version, protocol major, and capabilities to the gateway. Normal releases remain backward compatible during an adoption window. If a retired or security-affected SDK receives HTTP 426, it stops without performing an app action and tells the user to contact the app developer. See the [protocol contract](protocol/README.md) and [configuration reference](docs/CONFIGURATION.md).
+
 ## Install
 
 ```sh

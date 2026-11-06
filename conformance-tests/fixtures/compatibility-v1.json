@@ -1,0 +1,35 @@
+{
+  "protocol": 1,
+  "scenarios": [
+    {
+      "name": "ordinary rollout keeps legacy clients running",
+      "client": {},
+      "policy": { "minimum": "1.2.0", "recommended": "1.3.0", "enforce": false },
+      "result": "allow"
+    },
+    {
+      "name": "enforced normal minimum blocks a known old SDK",
+      "client": { "sdk": "1.1.9", "protocol": 1 },
+      "policy": { "minimum": "1.2.0", "recommended": "1.3.0", "enforce": true },
+      "result": "minimum_version"
+    },
+    {
+      "name": "emergency patch blocks an old SDK",
+      "client": { "sdk": "1.2.0", "protocol": 1 },
+      "policy": { "minimum": "1.1.1", "recommended": "1.2.1", "forceBelow": "1.2.1" },
+      "result": "emergency_patch"
+    },
+    {
+      "name": "emergency patch blocks an unversioned SDK",
+      "client": {},
+      "policy": { "minimum": "1.1.1", "recommended": "1.2.1", "forceBelow": "1.2.1" },
+      "result": "unversioned_client"
+    },
+    {
+      "name": "unsupported protocol is always rejected",
+      "client": { "sdk": "9.0.0", "protocol": 2 },
+      "policy": { "minimum": "1.1.1", "recommended": "1.2.0", "enforce": false },
+      "result": "unsupported_protocol"
+    }
+  ]
+}

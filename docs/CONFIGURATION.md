@@ -4,6 +4,14 @@
 
 This reference covers the public host configuration surfaces: `KokoProvider`, `KokoAgentConfig`, runtime appearance, per-run overrides, and built-in UI components. The exported TypeScript types remain the source of truth.
 
+## SDK and gateway compatibility
+
+Version negotiation is automatic and has no host configuration. SDK 1.2.0 sends its SDK version, protocol major, and capabilities on every gateway request. During a normal rollout the gateway can recommend a newer release while continuing to allow the installed SDK.
+
+For an expired compatibility window or emergency security patch, the gateway returns HTTP 426 `sdk_upgrade_required`. The SDK treats this as terminal, does not retry it, performs no app action, and shows a localized message telling the user that the SDK is too old and to contact the app developer. Direct `GatewayClient` integrations can inspect `GatewayUpgradeRequiredError`.
+
+The package exports `KOKO_SDK_VERSION`, `KOKO_PROTOCOL_VERSION`, and `KOKO_SDK_CAPABILITIES`. Breaking wire changes use a new `/vN`; npm versions do not redefine the protocol major.
+
 ## Complete example
 
 ```tsx

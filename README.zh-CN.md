@@ -10,6 +10,10 @@
 - Expo 使用开发构建或原生构建，不支持 Expo Go。
 - 生产环境需要宿主后端：长期 `clientSecret` 只保存在后端，App 仅取得短期 access token。它们都不是模型 API 密钥。
 
+## 版本兼容
+
+SDK 1.2.0 会向网关上报 SDK 版本、协议大版本和能力列表。正常发布在采用窗口期内保持向后兼容。已退役或受安全问题影响的 SDK 收到 HTTP 426 后会立即停止，不执行 App 操作，并提示用户联系应用开发者。详见[协议契约](protocol/README.md)和[完整配置](docs/CONFIGURATION.zh-CN.md)。
+
 ## 安装
 
 ```sh
