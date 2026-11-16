@@ -71,7 +71,7 @@ export function KokoHostOverlay({
       >
         {/*
           FullWindowOverlay sets the frame on its native container rather than
-          on itself, so its Yoga node measures 0x0 and `absoluteFillObject`
+          on itself, so its Yoga node measures 0x0 and `absoluteFill`
           (top/left/right/bottom: 0) collapses with it. Anything anchored with
           `bottom` then resolves against a zero-height box and lands above the
           top edge of the screen — the progress pill measured at y=-96. Size
@@ -95,7 +95,7 @@ export function KokoHostOverlay({
     // plain absolute layer already paints over everything in the window.
     //
     // Size it explicitly for the same reason as the iOS branch: measured inside
-    // a full-screen host root, `absoluteFillObject` still collapsed to height 0,
+    // a full-screen host root, `absoluteFill` still collapsed to height 0,
     // so bottom-anchored chrome sat below the screen and top-anchored chrome
     // (the cursor) landed a full screen height too low.
     return (
@@ -132,7 +132,7 @@ export function kokoHostOverlayUsesScreens(): boolean {
 
 const styles = StyleSheet.create({
   fill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.flatten(StyleSheet.absoluteFill),
     backgroundColor: 'transparent',
   },
   // Anchor top-left and take the size from props: `right`/`bottom` and `zIndex`

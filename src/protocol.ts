@@ -1,5 +1,5 @@
 /** Public SDK release version. Keep in sync with package.json. */
-export const KOKO_SDK_VERSION = '1.2.0';
+export const KOKO_SDK_VERSION = '1.2.1';
 
 /** HTTP contract major. Breaking changes require a new /vN namespace. */
 export const KOKO_PROTOCOL_VERSION = 1;

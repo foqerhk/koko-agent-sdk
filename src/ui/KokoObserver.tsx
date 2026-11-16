@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
 import {
   Animated,
   Easing,
@@ -67,7 +67,7 @@ export function KokoObserver({
   // user can drag it anywhere from there.
   const bottom = Math.max(insets.bottom, 8) + (userGateWaiting ? 144 : 40);
   const right = Math.max(insets.right, 8) + 14;
-  const rowRef = useRef<View>(null);
+  const rowRef = useRef<ComponentRef<typeof View>>(null);
   const {
     ref: cursorLayerRef,
     origin: cursorOrigin,
@@ -252,7 +252,7 @@ export function KokoObserver({
               nativeID={KOKO_CURSOR_TEST_ID}
               collapsable={false}
               pointerEvents="none"
-              style={StyleSheet.absoluteFillObject}
+              style={StyleSheet.absoluteFill}
               accessibilityElementsHidden
               importantForAccessibility="no-hide-descendants"
             >

@@ -27,3 +27,16 @@ Layout:
 
 The React Native SDK is the reference implementation. Other platform SDKs must
 depend on this protocol rather than npm package internals.
+
+## Release verification
+
+SDK 1.2.1 changes RN UI compatibility without changing the `/v1` wire contract,
+required fields, authentication flow or action meanings. Its N/N-1/N-2 release
+matrix uses actual SDK 1.2.1, 1.2.0 and 1.1.3 clients over loopback HTTP against
+the existing v1 endpoint set and the protocol-aware v1 middleware/handler set.
+
+The protocol-aware profile verifies additive discovery metadata and terminal
+426 handling; the legacy profile confirms that optional discovery is not a
+new prerequisite for session execution. This matrix does not require enabling
+minimum-version enforcement or emergency force-update switches in production.
+Do not raise those thresholds for this compatibility patch.

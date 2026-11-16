@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, type ComponentRef } from 'react';
 import type { View } from 'react-native';
 
 export type OverlayOrigin = { x: number; y: number };
@@ -15,7 +15,7 @@ export type OverlayOrigin = { x: number; y: number };
  * for hosts that do not pad (the origin is then zero).
  */
 export function useOverlayOrigin() {
-  const ref = useRef<View>(null);
+  const ref = useRef<ComponentRef<typeof View>>(null);
   const [origin, setOrigin] = useState<OverlayOrigin>({ x: 0, y: 0 });
 
   const measure = useCallback(() => {

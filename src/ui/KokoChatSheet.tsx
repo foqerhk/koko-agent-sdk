@@ -16,7 +16,6 @@ import {
   Text,
   TextInput,
   View,
-  type StatusBarProps,
   type StatusBarStyle,
 } from 'react-native';
 import { useKokoAgent } from '../provider/KokoProvider';
@@ -126,7 +125,7 @@ export function KokoChatSheet({ placeholder }: { placeholder?: string }) {
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   // Negative Y = off-screen above; sheet slides down from the top.
   const sheetY = useRef(new Animated.Value(-Dimensions.get('window').height)).current;
-  const statusBarEntryRef = useRef<StatusBarProps | null>(null);
+  const statusBarEntryRef = useRef<ReturnType<typeof StatusBar.pushStackEntry> | null>(null);
   const hostStatusBarRef = useRef<HostStatusBarSnapshot | null>(null);
 
   const primaryColor = branding.primaryColor;
@@ -175,7 +174,11 @@ export function KokoChatSheet({ placeholder }: { placeholder?: string }) {
       const prev = hostStatusBarRef.current;
       StatusBar.setBarStyle(prev.barStyle, true);
       if (Platform.OS === 'android' && prev.backgroundColor != null) {
-        StatusBar.setBackgroundColor(prev.backgroundColor, true);
+        // RN 0.88 removed this legacy setter as Android uses edge-to-edge.
+        const legacyStatusBar = StatusBar as typeof StatusBar & {
+          setBackgroundColor?: (color: string, animated?: boolean) => void;
+        };
+        legacyStatusBar.setBackgroundColor?.(prev.backgroundColor, true);
       }
     }
     hostStatusBarRef.current = null;
@@ -650,7 +653,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.flatten(StyleSheet.absoluteFill),
     zIndex: 0,
   },
   sheetWrap: {

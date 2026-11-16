@@ -1,6 +1,6 @@
 {
   "name": "@intentcomputing/koko-agent-sdk",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Koko Agent SDK — in-app AI agent for React Native (dump / find / tap with visible cursor). Talk to Intent Computing gateway; no LLM API keys in the app.",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
@@ -52,7 +52,9 @@
     "!**/__mocks__",
     "!android/build",
     "!android/.gradle",
-    "!ios/tests"
+    "!ios/tests",
+    "docs/RN_COMPATIBILITY.md",
+    "docs/RELEASE_1.2.1.md"
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -60,7 +62,7 @@
     "test": "jest",
     "lint": "tsc --noEmit",
     "prepublishOnly": "npm test && bob build",
-    "release": "npm publish --access public --registry https://registry.npmjs.org/"
+    "release": "bash scripts/release.sh"
   },
   "keywords": [
     "react-native",

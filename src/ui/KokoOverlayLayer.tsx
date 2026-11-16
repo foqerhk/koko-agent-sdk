@@ -46,7 +46,7 @@ export function KokoOverlayLayer({
 
 export const overlayFill = StyleSheet.create({
   fill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.flatten(StyleSheet.absoluteFill),
     zIndex: 9999,
     elevation: 9999,
   },

@@ -125,7 +125,7 @@ export function CursorOverlay() {
 
 const styles = StyleSheet.create({
   layer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.flatten(StyleSheet.absoluteFill),
     backgroundColor: 'transparent',
   },
   cursor: {
