@@ -1,15 +1,15 @@
 node_modules/
-lib/
+sdks/typescript/lib/
 *.log
 .DS_Store
 .idea/
 *.xcuserstate
-android/.gradle/
-android/build/
-android/local.properties
-example/node_modules/
-example/ios/Pods/
-example/ios/build/
+sdks/typescript/android/.gradle/
+sdks/typescript/android/build/
+sdks/typescript/android/local.properties
+examples/react-native/node_modules/
+examples/react-native/ios/Pods/
+examples/react-native/ios/build/
 coverage/
 __pycache__/
 .env
@@ -20,6 +20,8 @@ server/dist/
 # Private local runbooks (paths /联调细节) — never push to GitHub
 KOKO_LOCAL_DEVICE_AND_GATEWAY.md
 docs/private/
+TODO.md
+.env.koko-simulator
 
 # Local agent instructions
 /AGENTS.md

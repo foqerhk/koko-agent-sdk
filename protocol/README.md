@@ -30,9 +30,10 @@ depend on this protocol rather than npm package internals.
 
 ## Release verification
 
-SDK 1.2.1 changes RN UI compatibility without changing the `/v1` wire contract,
-required fields, authentication flow or action meanings. Its N/N-1/N-2 release
-matrix uses actual SDK 1.2.1, 1.2.0 and 1.1.3 clients over loopback HTTP against
+Candidate SDK 1.2.2 changes optional Android OCR loading and local privacy/manual
+handoff without changing the `/v1` wire contract, required fields,
+authentication flow or action meanings. Its N/N-1/N-2 release
+matrix uses actual SDK 1.2.2, 1.2.1 and 1.2.0 clients over loopback HTTP against
 the existing v1 endpoint set and the protocol-aware v1 middleware/handler set.
 
 The protocol-aware profile verifies additive discovery metadata and terminal
@@ -40,3 +41,17 @@ The protocol-aware profile verifies additive discovery metadata and terminal
 new prerequisite for session execution. This matrix does not require enabling
 minimum-version enforcement or emergency force-update switches in production.
 Do not raise those thresholds for this compatibility patch.
+
+The persistent takeover notice, one-time vibration and recovery-security
+assertion detection are local behavior. A disabled confirmation button still
+requires personal review; checking status never counts as accepting assertions.
+These changes add no required gateway fields or new `/v1` action semantics.
+
+## 2026-11-17 gateway hotfix
+
+The continuation/privacy hotfix uses existing protocol-1 `ask_user` responses,
+session IDs and execution permits. Private-page observations hand off before
+provider inference or billing, with an observation-only permit. No required
+request/response fields, SDK source or version thresholds change. This preserves
+the transport contract; client-side upload prevention and reliable local waiting
+remain SDK responsibilities.
